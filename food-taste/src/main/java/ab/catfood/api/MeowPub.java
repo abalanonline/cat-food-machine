@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-package ab.catmachine.api;
+package ab.catfood.api;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Queue {
-  private String queueName;
+public interface MeowPub<M> {
+  void pub(Queue queue, Meow<M> meow);
 }

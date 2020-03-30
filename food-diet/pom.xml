@@ -22,8 +22,8 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>ab</groupId>
-  <artifactId>catmachine</artifactId>
+  <groupId>ab.catfood</groupId>
+  <artifactId>food-diet</artifactId>
   <version>0.1.0</version>
 
   <properties>
@@ -55,54 +55,23 @@
 
   <dependencies>
 
-    <!-- taste defines interface -->
     <dependency>
       <groupId>ab.catfood</groupId>
       <artifactId>food-taste</artifactId>
       <version>0.1.0</version>
     </dependency>
 
-    <!-- this dependency defines implementation -->
     <dependency>
-      <groupId>ab.catfood</groupId>
-      <artifactId>food-diet</artifactId>
-      <version>0.1.0</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jms_1.1_spec</artifactId>
+      <version>1.1.1</version>
     </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-jms</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-    </dependency>
-
-    <!-- lombok -->
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.12</version>
-      <scope>provided</scope>
+      <artifactId>spring-context</artifactId>
     </dependency>
 
   </dependencies>
-
-
-  <build>
-    <finalName>${project.artifactId}</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

@@ -14,27 +14,38 @@
  * limitations under the License.
  */
 
-package ab.catmachine;
+package ab.catfood;
 
+import ab.catfood.api.Meow;
 import ab.catfood.api.MeowPub;
 import ab.catfood.api.MeowSub;
 import ab.catfood.api.Queue;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 @Service
-public class CatService {
+public class MeowNothing<M> implements ConnectionFactory, MeowPub<M>, MeowSub<M> {
 
-  @Autowired
-  private MeowPub<CatFood> pub;
+  @Override
+  public Connection createConnection() {
+    return null;
+  }
 
-  @Autowired
-  private MeowSub<CatFood> sub;
+  @Override
+  public Connection createConnection(String s, String s1) {
+    return null;
+  }
 
-  private List<Cat> cats;
+  @Override
+  public void pub(Queue queue, Meow<M> meow) {
+  }
 
-  private List<Queue> queues;
+  @Override
+  public void sub(Queue queue, BiConsumer<Map<String, String>, M> consumer) {
+  }
 
 }

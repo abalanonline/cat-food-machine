@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package ab.catmachine.api;
+package ab.catfood.api;
 
-import java.util.Map;
-import java.util.function.BiConsumer;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public interface MeowSub<M> {
-  void sub(Queue queue, BiConsumer<Map<String, String>, M> consumer);
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Queue {
+  private String queueName;
 }

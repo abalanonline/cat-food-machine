@@ -22,21 +22,29 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>ab</groupId>
-  <artifactId>cat-food-machine</artifactId>
+  <groupId>ab.catfood</groupId>
+  <artifactId>food-taste</artifactId>
   <version>0.1.0</version>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>food-taste</module>
-    <module>food-diet</module>
-    <module>food-fish</module>
-    <module>catmachine</module>
-  </modules>
 
   <properties>
-    <!-- do not install aggregator -->
-    <maven.install.skip>true</maven.install.skip>
+    <java.version>1.8</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
+
+  <dependencies>
+
+    <!-- lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.12</version>
+      <scope>provided</scope>
+    </dependency>
+
+  </dependencies>
+
 
 </project>

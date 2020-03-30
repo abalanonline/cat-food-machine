@@ -16,9 +16,9 @@
 
 package ab.catmachine;
 
-import ab.catmachine.api.Meow;
-import ab.catmachine.api.MeowPub;
-import ab.catmachine.api.Queue;
+import ab.catfood.api.Meow;
+import ab.catfood.api.MeowPub;
+import ab.catfood.api.Queue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package ab.catmachine;
+package ab.catfood;
 
-import ab.catmachine.api.Meow;
-import ab.catmachine.api.MeowPub;
-import ab.catmachine.api.MeowSub;
-import ab.catmachine.api.Queue;
+import ab.catfood.api.Meow;
+import ab.catfood.api.MeowPub;
+import ab.catfood.api.MeowSub;
+import ab.catfood.api.Queue;
 import com.amazon.sqs.javamessaging.ProviderConfiguration;
 import com.amazon.sqs.javamessaging.SQSConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 @Service
-public class MeowSqs implements ConnectionFactory, MeowPub<CatFood>, MeowSub<CatFood> {
+public class MeowSqs<M> implements ConnectionFactory, MeowPub<M>, MeowSub<M> {
 
   private final ConnectionFactory connectionFactory;
 
@@ -56,12 +56,12 @@ public class MeowSqs implements ConnectionFactory, MeowPub<CatFood>, MeowSub<Cat
   }
 
   @Override
-  public void pub(Queue queue, Meow<CatFood> meow) {
+  public void pub(Queue queue, Meow<M> meow) {
     jmsTemplate.convertAndSend(queue.getQueueName(), meow.getData());
   }
 
   @Override
-  public void sub(Queue queue, BiConsumer<Map<String, String>, CatFood> consumer) {
+  public void sub(Queue queue, BiConsumer<Map<String, String>, M> consumer) {
     //jmsTemplate.receiveAndConvert("");
     // TODO ???
   }

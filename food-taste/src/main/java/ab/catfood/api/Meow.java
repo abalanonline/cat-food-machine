@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-package ab.catmachine.api;
+package ab.catfood.api;
 
-public interface MeowPub<M> {
-  void pub(Queue queue, Meow<M> meow);
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Map;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Meow<M> {
+  private Map<String, String> headers;
+  private M data;
 }
