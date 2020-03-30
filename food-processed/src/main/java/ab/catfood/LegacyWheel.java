@@ -59,6 +59,13 @@ public class LegacyWheel<M> implements MeowPub<M>, MeowSub<M> {
   }
 
   @SneakyThrows
+  public byte[] serialize(M object) {
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+    objectOutputStream.writeObject(object);
+    return byteArrayOutputStream.toByteArray();
+  }
+
   @Override
   public void pub(Queue queue, Meow<M> meow) {
     provisioningProvider.provisionProducerDestination(
@@ -67,10 +74,7 @@ public class LegacyWheel<M> implements MeowPub<M>, MeowSub<M> {
 
     MessageProperties properties = new MessageProperties();
     properties.getHeaders().putAll(meow.getHeaders());
-    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-    objectOutputStream.writeObject(meow.getData());
-    amqpTemplate.send(queue.getQueueName(), new Message(byteArrayOutputStream.toByteArray(), properties));
+    amqpTemplate.send(queue.getQueueName(), new Message(serialize(meow.getData()), properties));
   }
 
   @SneakyThrows
@@ -78,7 +82,6 @@ public class LegacyWheel<M> implements MeowPub<M>, MeowSub<M> {
     return (M) new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
   }
 
-  @SneakyThrows
   @Override
   public void sub(Queue queue, BiConsumer<Map<String, String>, M> consumer) {
     RabbitConsumerProperties rabbitConsumerProperties = new RabbitConsumerProperties();
