@@ -30,6 +30,7 @@
   <modules>
     <module>food-taste</module>
     <module>food-diet</module>
+    <module>food-processed</module>
     <module>food-fish</module>
     <module>catmachine</module>
   </modules>
