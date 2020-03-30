@@ -20,9 +20,7 @@ import org.springframework.cloud.stream.binder.Binder;
 import org.springframework.cloud.stream.binder.Binding;
 import org.springframework.cloud.stream.binder.ConsumerProperties;
 import org.springframework.cloud.stream.binder.ProducerProperties;
-import org.springframework.stereotype.Service;
 
-@Service
 public class EmptyBinder<T> implements Binder<T, ConsumerProperties, ProducerProperties>, Binding<T> {
 
   @Override

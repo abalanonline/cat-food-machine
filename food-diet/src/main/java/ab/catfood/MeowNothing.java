@@ -22,23 +22,11 @@ import ab.catfood.api.MeowSub;
 import ab.catfood.api.Queue;
 import org.springframework.stereotype.Service;
 
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
 @Service
-public class MeowNothing<M> implements ConnectionFactory, MeowPub<M>, MeowSub<M> {
-
-  @Override
-  public Connection createConnection() {
-    return null;
-  }
-
-  @Override
-  public Connection createConnection(String s, String s1) {
-    return null;
-  }
+public class MeowNothing<M> implements MeowPub<M>, MeowSub<M> {
 
   @Override
   public void pub(Queue queue, Meow<M> meow) {
