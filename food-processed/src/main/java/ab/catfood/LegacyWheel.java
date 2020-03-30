@@ -35,7 +35,9 @@ import org.springframework.cloud.stream.binder.rabbit.properties.RabbitProducerP
 import org.springframework.cloud.stream.binder.rabbit.provisioning.RabbitExchangeQueueProvisioner;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -52,7 +54,7 @@ public class LegacyWheel<M> implements MeowPub<M>, MeowSub<M> {
   private SimpleMessageListenerContainer container;
 
   public LegacyWheel(@Autowired ConnectionFactory rabbitConnectionFactory) {
-    container = new SimpleMessageListenerContainer();
+    container = new SimpleMessageListenerContainer(rabbitConnectionFactory);
     provisioningProvider = new RabbitExchangeQueueProvisioner(rabbitConnectionFactory);
   }
 
@@ -71,16 +73,28 @@ public class LegacyWheel<M> implements MeowPub<M>, MeowSub<M> {
     amqpTemplate.send(queue.getQueueName(), new Message(byteArrayOutputStream.toByteArray(), properties));
   }
 
+  @SneakyThrows
+  public M deserialize(byte[] bytes) {
+    return (M) new ObjectInputStream(new ByteArrayInputStream(bytes)).readObject();
+  }
+
+  @SneakyThrows
   @Override
   public void sub(Queue queue, BiConsumer<Map<String, String>, M> consumer) {
+    RabbitConsumerProperties rabbitConsumerProperties = new RabbitConsumerProperties();
+    rabbitConsumerProperties.setQueueNameGroupOnly(true);
     provisioningProvider.provisionConsumerDestination(
         queue.getQueueName(), queue.getQueueName(),
-        new ExtendedConsumerProperties<>(new RabbitConsumerProperties()));
+        new ExtendedConsumerProperties<>(rabbitConsumerProperties));
 
-    container.setMessageListener((MessageListener) message -> consumer.accept(
-        message.getMessageProperties().getHeaders().entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, e -> String.valueOf(e.getValue()))),
-        (M) message.getBody()));
+    container.addQueueNames(queue.getQueueName());
+    container.setMessageListener((MessageListener) message -> {
+      consumer.accept(
+          message.getMessageProperties().getHeaders().entrySet().stream()
+              .collect(Collectors.toMap(Map.Entry::getKey, e -> String.valueOf(e.getValue()))),
+          deserialize(message.getBody()));
+    });
+    container.start();
   }
 
 }
