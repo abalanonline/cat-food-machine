@@ -62,39 +62,41 @@
 
   <dependencies>
 
-    <!-- taste defines interface -->
+    <!-- flavor defines interface -->
     <dependency>
       <groupId>ab.catfood</groupId>
-      <artifactId>food-taste</artifactId>
+      <artifactId>food-star</artifactId>
       <version>0.1.0</version>
     </dependency>
-
-    <!-- spring cloud bus require stream binders -->
     <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-bus</artifactId>
+      <groupId>ab.catfood</groupId>
+      <artifactId>food-bus</artifactId>
+      <version>0.1.0</version>
     </dependency>
 
     <!-- this dependency defines implementation -->
     <dependency>
       <groupId>ab.catfood</groupId>
-      <artifactId>food-processed</artifactId>
+      <artifactId>food-no-taste</artifactId>
+      <version>0.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>ab.catfood</groupId>
+      <artifactId>food-aroma</artifactId>
       <version>0.1.0</version>
     </dependency>
 
+    <!-- and healthy food service -->
+    <dependency>
+      <groupId>ab.catfood</groupId>
+      <artifactId>food-rabbit</artifactId>
+      <version>0.1.0</version>
+    </dependency>
+
+    <!-- end of fun line -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-jms</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
     </dependency>
 
     <!-- lombok -->

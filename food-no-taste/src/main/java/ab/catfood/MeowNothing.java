@@ -16,32 +16,24 @@
 
 package ab.catfood;
 
-import com.amazon.sqs.javamessaging.ProviderConfiguration;
-import com.amazon.sqs.javamessaging.SQSConnectionFactory;
+import ab.catfood.api.Meow;
+import ab.catfood.api.MeowPub;
+import ab.catfood.api.MeowSub;
+import ab.catfood.api.Queue;
 import org.springframework.stereotype.Service;
 
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 @Service
-public class MeowSqs implements ConnectionFactory {
+public class MeowNothing<M> implements MeowPub<M>, MeowSub<M> {
 
-  private final ConnectionFactory connectionFactory;
-
-  public MeowSqs() {
-    // get configuration from local .aws
-    this.connectionFactory = new SQSConnectionFactory(new ProviderConfiguration());
+  @Override
+  public void pub(Queue queue, Meow<M> meow) {
   }
 
   @Override
-  public Connection createConnection() throws JMSException {
-    return connectionFactory.createConnection();
-  }
-
-  @Override
-  public Connection createConnection(String s, String s1) throws JMSException {
-    return connectionFactory.createConnection(s, s1);
+  public void sub(Queue queue, BiConsumer<Map<String, String>, M> consumer) {
   }
 
 }

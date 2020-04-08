@@ -55,12 +55,18 @@
 
   <dependencies>
 
+    <!-- star -->
     <dependency>
       <groupId>ab.catfood</groupId>
-      <artifactId>food-taste</artifactId>
+      <artifactId>food-star</artifactId>
       <version>0.1.0</version>
+      <scope>provided</scope>
+      <!-- require to explicitly add interface dependency -->
     </dependency>
 
+    <!-- source of taste is in module code -->
+
+    <!-- source of smell -->
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-stream-binder-rabbit</artifactId>

@@ -16,8 +16,7 @@
 
 package ab.catfood;
 
-import com.amazon.sqs.javamessaging.ProviderConfiguration;
-import com.amazon.sqs.javamessaging.SQSConnectionFactory;
+import com.rabbitmq.jms.admin.RMQConnectionFactory;
 import org.springframework.stereotype.Service;
 
 import javax.jms.Connection;
@@ -25,13 +24,12 @@ import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 
 @Service
-public class MeowSqs implements ConnectionFactory {
+public class MeowRabbit implements ConnectionFactory {
 
   private final ConnectionFactory connectionFactory;
 
-  public MeowSqs() {
-    // get configuration from local .aws
-    this.connectionFactory = new SQSConnectionFactory(new ProviderConfiguration());
+  public MeowRabbit() {
+    this.connectionFactory = new RMQConnectionFactory();
   }
 
   @Override

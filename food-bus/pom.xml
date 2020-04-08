@@ -23,7 +23,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>ab.catfood</groupId>
-  <artifactId>food-fish</artifactId>
+  <artifactId>food-bus</artifactId>
   <version>0.1.0</version>
 
   <properties>
@@ -56,14 +56,8 @@
   <dependencies>
 
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>amazon-sqs-java-messaging-lib</artifactId>
-      <version>1.0.8</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-bus</artifactId>
     </dependency>
 
   </dependencies>
