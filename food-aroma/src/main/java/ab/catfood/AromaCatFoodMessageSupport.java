@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.provisioning.ConsumerDestination;
 import org.springframework.cloud.stream.provisioning.ProducerDestination;
 import org.springframework.integration.endpoint.MessageProducerSupport;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerEndpointRegistry;
 import org.springframework.jms.config.SimpleJmsListenerEndpoint;
@@ -31,22 +32,23 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.stereotype.Service;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.MessageListener;
 import java.util.UUID;
 
 @Slf4j
 @Service
-public class AromaCatFoodMessageSupport extends MessageProducerSupport implements MessageHandler, Runnable, MessageChannel, MessageListener {
+public class AromaCatFoodMessageSupport extends MessageProducerSupport implements MessageHandler, MessageChannel, MessageListener {
 
   @Autowired
-  JmsTemplate jmsTemplate;
-
-  @Autowired
-  JmsListenerContainerFactory<?> jmsListenerContainerFactory;
-  // let Spring choose Simple or Default implementation
+  ConnectionFactory jmsConnectionFactory;
 
   @Autowired
   JmsListenerEndpointRegistry jmsListenerEndpointRegistry;
+
+  private JmsListenerContainerFactory<?> jmsListenerContainerFactory;
+
+  private JmsTemplate jmsTemplate;
 
   ProducerDestination producerDestination;
 
@@ -54,19 +56,6 @@ public class AromaCatFoodMessageSupport extends MessageProducerSupport implement
 
   public AromaCatFoodMessageSupport() {
     setOutputChannel(this); // set to mock before outputChannel is configured
-  }
-
-  @Override
-  public void run() { // clumsy receiver, not used
-    while (true) {
-      try {
-        final Message<?> message = (Message<?>) jmsTemplate.receiveAndConvert(this.consumerDestination.getName());
-        sendMessage(message);
-      } catch (RuntimeException e) {
-        log.error("Message receive error, receiver shut down", e);
-        break; // exiting
-      }
-    }
   }
 
   @SneakyThrows
@@ -78,7 +67,23 @@ public class AromaCatFoodMessageSupport extends MessageProducerSupport implement
   @Override
   public void handleMessage(Message<?> message) {
     jmsTemplate.convertAndSend(this.producerDestination.getName(), message);
-}
+  }
+
+  private void createMyJmsObjects() {
+    if (jmsTemplate == null) {
+      jmsTemplate = new JmsTemplate(jmsConnectionFactory);
+      jmsTemplate.setPubSubDomain(true);
+    }
+    if (jmsListenerContainerFactory == null) {
+      DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+      factory.setPubSubDomain(true);
+      factory.setConnectionFactory(jmsConnectionFactory);
+      factory.setSessionTransacted(true);
+      factory.setAutoStartup(true);
+      jmsListenerContainerFactory = factory;
+    }
+
+  }
 
   @Override // dummy MessageChannel
   public boolean send(Message<?> message) {
@@ -91,19 +96,19 @@ public class AromaCatFoodMessageSupport extends MessageProducerSupport implement
   }
 
   public void setProducerDestination(ProducerDestination producerDestination) {
-    jmsTemplate.setPubSubDomain(true); // FIXME JMS singleton switched to pub/sub
+    createMyJmsObjects();
     this.producerDestination = producerDestination;
   }
 
   public void setConsumerDestination(ConsumerDestination consumerDestination) {
-    jmsTemplate.setPubSubDomain(true); // FIXME JMS singleton switched to pub/sub
+    createMyJmsObjects();
     this.consumerDestination = consumerDestination;
-    //new Thread(this, AromaCatFoodMessageSupport.class.getSimpleName()).start();
 
     SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
     endpoint.setMessageListener(this);
     endpoint.setDestination(this.consumerDestination.getName());
     endpoint.setId(this.getClass().getName() + "#" + UUID.randomUUID().toString());
+    //MessageListenerContainer listenerContainer = jmsListenerContainerFactory.createListenerContainer(endpoint);
     jmsListenerEndpointRegistry.registerListenerContainer(endpoint, jmsListenerContainerFactory, true);
   }
 }
