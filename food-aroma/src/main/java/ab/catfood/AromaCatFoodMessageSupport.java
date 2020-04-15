@@ -16,23 +16,37 @@
 
 package ab.catfood;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.provisioning.ConsumerDestination;
 import org.springframework.cloud.stream.provisioning.ProducerDestination;
 import org.springframework.integration.endpoint.MessageProducerSupport;
+import org.springframework.jms.config.JmsListenerContainerFactory;
+import org.springframework.jms.config.JmsListenerEndpointRegistry;
+import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.stereotype.Service;
 
+import javax.jms.MessageListener;
+import java.util.UUID;
+
 @Slf4j
 @Service
-public class AromaCatFoodMessageSupport extends MessageProducerSupport implements MessageHandler, Runnable, MessageChannel {
+public class AromaCatFoodMessageSupport extends MessageProducerSupport implements MessageHandler, Runnable, MessageChannel, MessageListener {
 
   @Autowired
   JmsTemplate jmsTemplate;
+
+  @Autowired
+  JmsListenerContainerFactory<?> jmsListenerContainerFactory;
+  // let Spring choose Simple or Default implementation
+
+  @Autowired
+  JmsListenerEndpointRegistry jmsListenerEndpointRegistry;
 
   ProducerDestination producerDestination;
 
@@ -43,7 +57,7 @@ public class AromaCatFoodMessageSupport extends MessageProducerSupport implement
   }
 
   @Override
-  public void run() { // FIXME clumsy receiver
+  public void run() { // clumsy receiver, not used
     while (true) {
       try {
         final Message<?> message = (Message<?>) jmsTemplate.receiveAndConvert(this.consumerDestination.getName());
@@ -53,6 +67,12 @@ public class AromaCatFoodMessageSupport extends MessageProducerSupport implement
         break; // exiting
       }
     }
+  }
+
+  @SneakyThrows
+  @Override
+  public void onMessage(javax.jms.Message message) {
+    sendMessage((Message<?>) jmsTemplate.getMessageConverter().fromMessage(message));
   }
 
   @Override
@@ -78,6 +98,12 @@ public class AromaCatFoodMessageSupport extends MessageProducerSupport implement
   public void setConsumerDestination(ConsumerDestination consumerDestination) {
     jmsTemplate.setPubSubDomain(true); // FIXME JMS singleton switched to pub/sub
     this.consumerDestination = consumerDestination;
-    new Thread(this, AromaCatFoodMessageSupport.class.getSimpleName()).start();
+    //new Thread(this, AromaCatFoodMessageSupport.class.getSimpleName()).start();
+
+    SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
+    endpoint.setMessageListener(this);
+    endpoint.setDestination(this.consumerDestination.getName());
+    endpoint.setId(this.getClass().getName() + "#" + UUID.randomUUID().toString());
+    jmsListenerEndpointRegistry.registerListenerContainer(endpoint, jmsListenerContainerFactory, true);
   }
 }
