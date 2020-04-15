@@ -40,10 +40,6 @@ import java.util.UUID;
 @Service
 public class AromaCatFoodMessageSupport extends MessageProducerSupport implements MessageHandler, MessageChannel, MessageListener {
 
-  @Autowired
-  ConnectionFactory jmsConnectionFactory;
-
-  @Autowired
   JmsListenerEndpointRegistry jmsListenerEndpointRegistry;
 
   private JmsListenerContainerFactory<?> jmsListenerContainerFactory;
@@ -54,7 +50,21 @@ public class AromaCatFoodMessageSupport extends MessageProducerSupport implement
 
   ConsumerDestination consumerDestination;
 
-  public AromaCatFoodMessageSupport() {
+  public AromaCatFoodMessageSupport(ConnectionFactory jmsConnectionFactory, JmsListenerEndpointRegistry jmsListenerEndpointRegistry) {
+
+    // create JmsTemplate
+    jmsTemplate = new JmsTemplate(jmsConnectionFactory);
+    jmsTemplate.setPubSubDomain(true);
+
+    // create JmsListenerContainerFactory
+    DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+    factory.setPubSubDomain(true);
+    factory.setConnectionFactory(jmsConnectionFactory);
+    factory.setSessionTransacted(true);
+    factory.setAutoStartup(true);
+    jmsListenerContainerFactory = factory;
+
+    this.jmsListenerEndpointRegistry = jmsListenerEndpointRegistry;
     setOutputChannel(this); // set to mock before outputChannel is configured
   }
 
@@ -69,22 +79,6 @@ public class AromaCatFoodMessageSupport extends MessageProducerSupport implement
     jmsTemplate.convertAndSend(this.producerDestination.getName(), message);
   }
 
-  private void createMyJmsObjects() {
-    if (jmsTemplate == null) {
-      jmsTemplate = new JmsTemplate(jmsConnectionFactory);
-      jmsTemplate.setPubSubDomain(true);
-    }
-    if (jmsListenerContainerFactory == null) {
-      DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-      factory.setPubSubDomain(true);
-      factory.setConnectionFactory(jmsConnectionFactory);
-      factory.setSessionTransacted(true);
-      factory.setAutoStartup(true);
-      jmsListenerContainerFactory = factory;
-    }
-
-  }
-
   @Override // dummy MessageChannel
   public boolean send(Message<?> message) {
     throw new IllegalStateException("Output MessageChannel used before initializing");
@@ -96,12 +90,10 @@ public class AromaCatFoodMessageSupport extends MessageProducerSupport implement
   }
 
   public void setProducerDestination(ProducerDestination producerDestination) {
-    createMyJmsObjects();
     this.producerDestination = producerDestination;
   }
 
   public void setConsumerDestination(ConsumerDestination consumerDestination) {
-    createMyJmsObjects();
     this.consumerDestination = consumerDestination;
 
     SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
