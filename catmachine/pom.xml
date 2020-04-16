@@ -77,7 +77,7 @@
     <!-- this dependency defines implementation -->
     <dependency>
       <groupId>ab.catfood</groupId>
-      <artifactId>food-no-taste</artifactId>
+      <artifactId>food-flavor</artifactId>
       <version>0.1.0</version>
     </dependency>
     <dependency>
