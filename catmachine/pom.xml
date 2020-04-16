@@ -62,7 +62,7 @@
 
   <dependencies>
 
-    <!-- flavor defines interface -->
+    <!-- these dependencies define interface -->
     <dependency>
       <groupId>ab.catfood</groupId>
       <artifactId>food-star</artifactId>

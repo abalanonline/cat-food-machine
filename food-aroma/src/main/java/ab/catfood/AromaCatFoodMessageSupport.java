@@ -60,8 +60,8 @@ public class AromaCatFoodMessageSupport extends MessageProducerSupport implement
     DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
     factory.setPubSubDomain(true);
     factory.setConnectionFactory(jmsConnectionFactory);
-    factory.setSessionTransacted(true);
-    factory.setAutoStartup(true);
+    //factory.setSessionTransacted(true);
+    //factory.setAutoStartup(true);
     jmsListenerContainerFactory = factory;
 
     this.jmsListenerEndpointRegistry = jmsListenerEndpointRegistry;

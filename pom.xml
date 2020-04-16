@@ -28,16 +28,22 @@
   <packaging>pom</packaging>
 
   <modules>
+    <!-- interfaces -->
     <module>food-star</module>
     <module>food-bus</module>
-    <module>food-flavor</module>
 
+    <!-- empty implementations -->
     <module>food-no-taste</module>
     <module>food-no-smell</module>
+
+    <!-- bad implementation -->
+    <module>food-processed</module>
+
+    <!-- good implementations -->
+    <module>food-flavor</module>
     <module>food-aroma</module>
 
     <module>food-diet</module>
-    <module>food-processed</module>
     <module>food-fish</module>
     <module>catmachine</module>
   </modules>
