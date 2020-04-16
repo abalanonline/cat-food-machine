@@ -43,6 +43,11 @@
     <module>food-flavor</module>
     <module>food-aroma</module>
 
+    <module>food-rabbit</module>
+    <module>food-chicken</module>
+    <module>food-hare</module>
+    <module>food-human</module>
+
     <module>food-diet</module>
     <module>food-fish</module>
     <module>catmachine</module>

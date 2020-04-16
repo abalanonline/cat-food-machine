@@ -16,14 +16,14 @@
 
 package ab.catfood;
 
-import com.rabbitmq.jms.admin.RMQConnectionFactory;
+import org.apache.qpid.jms.JmsConnectionFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MeowRabbit extends RMQConnectionFactory {
+public class MeowQpid extends JmsConnectionFactory {
 
-  public MeowRabbit() {
-    super();
+  public MeowQpid() {
+    super("", "", "amqp://localhost:5772");
   }
 
 }

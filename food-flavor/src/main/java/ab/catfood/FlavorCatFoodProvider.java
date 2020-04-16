@@ -26,6 +26,7 @@ import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerEndpointRegistry;
 import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.stereotype.Service;
 
 import javax.jms.ConnectionFactory;
@@ -53,6 +54,9 @@ public class FlavorCatFoodProvider<M> implements MeowPub<M>, MeowSub<M>, Message
     // create JmsTemplate
     jmsTemplate = new JmsTemplate(jmsConnectionFactory);
     jmsTemplate.setPubSubDomain(false);
+    final MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
+    messageConverter.setTypeIdPropertyName("TypeIdPropertyName");
+    jmsTemplate.setMessageConverter(messageConverter);
 
     // create JmsListenerContainerFactory
     DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();

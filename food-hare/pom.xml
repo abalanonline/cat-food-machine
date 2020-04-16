@@ -22,15 +22,8 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>	
-    <groupId>org.springframework.boot</groupId>	
-    <artifactId>spring-boot-starter-parent</artifactId>	
-    <version>1.5.22.RELEASE</version>	
-    <relativePath/>	
-  </parent>
-
-  <groupId>ab</groupId>
-  <artifactId>catmachine</artifactId>
+  <groupId>ab.catfood</groupId>
+  <artifactId>food-hare</artifactId>
   <version>0.1.0</version>
 
   <properties>
@@ -62,62 +55,28 @@
 
   <dependencies>
 
-    <!-- these dependencies define interface -->
     <dependency>
-      <groupId>ab.catfood</groupId>
-      <artifactId>food-star</artifactId>
-      <version>0.1.0</version>
+      <groupId>org.apache.qpid</groupId>
+      <artifactId>qpid-jms-client</artifactId>
+      <version>0.50.0</version>
     </dependency>
     <dependency>
-      <groupId>ab.catfood</groupId>
-      <artifactId>food-bus</artifactId>
-      <version>0.1.0</version>
-    </dependency>
-
-    <!-- this dependency defines implementation -->
-    <dependency>
-      <groupId>ab.catfood</groupId>
-      <artifactId>food-flavor</artifactId>
-      <version>0.1.0</version>
+      <groupId>org.apache.qpid</groupId>
+      <artifactId>qpid-client</artifactId>
+      <version>6.3.4</version>
     </dependency>
     <dependency>
-      <groupId>ab.catfood</groupId>
-      <artifactId>food-aroma</artifactId>
-      <version>0.1.0</version>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jms_1.1_spec</artifactId>
+      <version>1.1.1</version>
     </dependency>
 
-    <!-- and healthy food service -->
     <dependency>
-      <groupId>ab.catfood</groupId>
-      <artifactId>food-human</artifactId>
-      <version>0.1.0</version>
-    </dependency>
-
-    <!-- end of fun line -->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
-    </dependency>
-
-    <!-- lombok -->
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.12</version>
-      <scope>provided</scope>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
     </dependency>
 
   </dependencies>
 
-
-  <build>
-    <finalName>${project.artifactId}</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>
