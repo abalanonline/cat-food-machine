@@ -16,14 +16,15 @@
 
 package ab.catfood;
 
-import org.apache.qpid.jms.JmsConnectionFactory;
+import org.apache.qpid.client.AMQConnectionFactory;
+import org.apache.qpid.url.URLSyntaxException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MeowQpid extends JmsConnectionFactory {
+public class MeowAmqp08 extends AMQConnectionFactory {
 
-  public MeowQpid() {
-    super("", "", "amqp://localhost:5772");
+  public MeowAmqp08() throws URLSyntaxException {
+    super("amqp://guest:guest@clientid/?brokerlist='tcp://localhost:5672'");
   }
 
 }
