@@ -21,6 +21,7 @@ import ab.catfood.api.MeowPub;
 import ab.catfood.api.Queue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -34,10 +35,13 @@ public class Timer {
 	@Autowired
 	MeowPub<CatFood> pub;
 
+	@Value("${catmachine.queue}")
+	private String queueName;
+
 	@Scheduled(fixedRate = 10000)
 	public void click() {
 		log.info("Catmachine idle");
-		Queue queue = new Queue("mailbox");
+		Queue queue = new Queue(queueName);
 		Meow<CatFood> meow = new Meow<>(new HashMap<>(), new CatFood(UUID.randomUUID()));
 		pub.pub(queue, meow);
 	}

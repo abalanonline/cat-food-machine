@@ -89,7 +89,7 @@
     <!-- and healthy food service -->
     <dependency>
       <groupId>ab.catfood</groupId>
-      <artifactId>food-human</artifactId>
+      <artifactId>food-chicken</artifactId>
       <version>0.1.0</version>
     </dependency>
 

@@ -1,14 +1,16 @@
 # for curl -d "*" http://localhost:8080/bus/refresh
 management.security.enabled: false
-spring.cloud.bus.destination: prefix1-springCloudBus
+#spring.cloud.bus.destination: springCloudBus
+spring.cloud.bus.destination: ctmac-topic
+catmachine.queue: ctmac-queue
 
 # pub/sub set explicitly, this key is ignored
-spring.jms.pub-sub-domain: true
+#spring.jms.pub-sub-domain: true
 
 # for openwire broker
 spring.activemq:
   #broker-url: ssl://x-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-x.mq.us-east-1.amazonaws.com:61617
-  broker-url: tcp://localhost:61616
+  broker-url: failover:(tcp://localhost:61616,tcp://localhost:61616)
   user: admin
   password: admin
 

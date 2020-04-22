@@ -20,6 +20,7 @@ import ab.catfood.api.MeowSub;
 import ab.catfood.api.Queue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -29,10 +30,12 @@ import java.util.function.BiConsumer;
 @Service
 public class SimpleSubscriber implements BiConsumer<Map<String, String>, CatFood> {
 
-  Queue queue = new Queue("mailbox");
+  //@Value("${catmachine.queue}") // FIXME failed to make it work
+  private String queueName = "ctmac-queue";
 
   @Autowired
   public SimpleSubscriber(MeowSub<CatFood> sub) {
+    Queue queue = new Queue(queueName);
     sub.sub(queue, this);
   }
 
