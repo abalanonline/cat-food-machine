@@ -23,7 +23,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>ab.catfood</groupId>
-  <artifactId>food-human</artifactId>
+  <artifactId>food-dinosaur</artifactId>
   <version>0.1.0</version>
 
   <properties>
