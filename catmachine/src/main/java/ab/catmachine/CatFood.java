@@ -27,5 +27,27 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CatFood implements Serializable {
+  private final static String[] FOOD_TYPES = {
+      "something", "salmon", "tuna", "mutton", "chicken", "turkey", "duck", "goose",
+      "beef", "pork", "eggs", "ham", "liver", "giblets", "crab", "whitefish"};
+
+  private final static String[] FOOD_TEXTURES = {
+      "inedible", "pate", "shredded", "cubed", "flaked", "minced", "morsels", "sliced",
+      "stewed", "blended", "liquid", "smooth", "mixed", "chopped", "chunked", "solid"};
+
   private UUID uuid;
+
+  public int getTexture() {
+    return (int) (uuid.getMostSignificantBits() & 0x0F);
+  }
+
+  public int getFoodType() {
+    return (int) (uuid.getLeastSignificantBits() & 0x0F);
+  }
+
+  @Override
+  public String toString() {
+    return FOOD_TEXTURES[getTexture()] + " " + FOOD_TYPES[getFoodType()] + " " + uuid.toString().substring(34);
+  }
+
 }

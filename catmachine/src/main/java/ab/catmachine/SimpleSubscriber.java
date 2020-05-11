@@ -31,12 +31,12 @@ import java.util.function.BiConsumer;
 public class SimpleSubscriber implements BiConsumer<Map<String, String>, CatFood> {
 
   //@Value("${catmachine.queue}") // FIXME failed to make it work
-  private String queueName = "ctmac-queue";
+  private String queueName = "test-ctm-queue";
 
   @Autowired
   public SimpleSubscriber(MeowSub<CatFood> sub) {
     Queue queue = new Queue(queueName);
-    sub.sub(queue, this);
+    //sub.sub(queue, this);
   }
 
   @Override

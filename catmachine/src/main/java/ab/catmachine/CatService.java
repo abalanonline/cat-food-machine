@@ -16,25 +16,143 @@
 
 package ab.catmachine;
 
+import ab.catfood.api.Meow;
 import ab.catfood.api.MeowPub;
 import ab.catfood.api.MeowSub;
 import ab.catfood.api.Queue;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.bus.ServiceMatcher;
+import org.springframework.cloud.bus.event.RemoteApplicationEvent;
+import org.springframework.cloud.bus.event.UnknownRemoteApplicationEvent;
+import org.springframework.cloud.context.scope.refresh.RefreshScopeRefreshedEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
-import java.util.List;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BiConsumer;
 
+/**
+ * Cat as a service (CaaS) is a category of companion animal services
+ * that provides a cat that can be watched and played with
+ */
+@Slf4j
 @Service
-public class CatService {
+public class CatService implements BiConsumer<Map<String, String>, CatFood> {
+
+  String[] popularCatNames = {
+      "Max", "Tiger", "Chloe", "Tigger", "Kitty", "Molly", "Baby", "Smokey", "Lucy", "Charlie", "Angel", "Blackie",
+      "Bella", "Simon", "Samantha", "Oliver", "Shadow", "Jack", "Princess", "Tom", "Sam", "Sophie", "Sammy", "Misty",
+      "Buddy", "Patches", "Casper", "Oreo", "Cleo", "Sassy", "Sylvester", "Lucky", "Muffin", "Simba", "Whiskers",
+      "Fluffy", "Lily", "Fraidy", "Oscar", "Maggie", "Patch", "Scaredy"};
+
+  String[] popularCatBehaviours = {
+      "jumped", "kneaded", "twitched ears", "opened mouth", "laid down", "leaped", "stretched", "twitched tail",
+      "drooled", "curled up", "grumped", "bounced", "closed eyes", "scratched", "curl tail", "blinked", "poked",
+      "licked", "flatten ears", "rubbed", "got excited"};
+
+  public static final Queue QUEUE = new Queue("test-ctm-queue");
+
+  @Autowired
+  private ServiceMatcher serviceMatcher;
+
+  @Autowired
+  private ApplicationEventPublisher applicationEventPublisher;
+
+  public void somethingACatDoes(String something) {
+    applicationEventPublisher.publishEvent(new StringEvent(firstName + " " + something));
+  }
+
+  @EventListener
+  public void onRefreshScopeRefreshed(final RefreshScopeRefreshedEvent event) {
+    somethingACatDoes(randomBehaviour() + " and meowed");
+  }
+
+  @EventListener
+  public void onRemoteApplicationEvent(final RemoteApplicationEvent event) {
+    final String string;
+    try {
+      string = new StringEvent(event).getString();
+    } catch (Exception e) {
+      return; // could not create StringEvent - do nothing
+    }
+    log.info(string);
+    if (string.contains("meow")) runCatMachine();
+  }
+
+  public void runCatMachine() {
+    for (int i = 0; i < 4; i++) {
+      final CatFood catFood = new CatFood(UUID.randomUUID());
+      Meow<CatFood> meow = new Meow<>(new HashMap<>(), catFood);
+      pub.pub(QUEUE, meow);
+      somethingACatDoes("catmachine delivered " + catFood);
+    }
+  }
+
+  private final String firstName;
 
   @Autowired
   private MeowPub<CatFood> pub;
 
   @Autowired
-  private MeowSub<CatFood> sub;
+  public CatService(MeowSub<CatFood> sub) {
+    this.firstName = popularCatNames[ThreadLocalRandom.current().nextInt(popularCatNames.length)]
+        + String.format("%02d", ThreadLocalRandom.current().nextInt(100));
+    sub.sub(QUEUE, this);
+  }
 
-  private List<Cat> cats;
+  public String randomBehaviour() {
+    return popularCatBehaviours[ThreadLocalRandom.current().nextInt(popularCatBehaviours.length)];
+  }
 
-  private List<Queue> queues;
+  @Override
+  public void accept(Map<String, String> stringStringMap, CatFood catFood) {
+    somethingACatDoes("picked " + catFood);
+    consumeFood(catFood);
+    somethingACatDoes("consumed " + catFood + " and " + randomBehaviour());
+  }
+
+  @SneakyThrows
+  private void consumeFood(CatFood catFood) {
+    Thread.sleep(catFood.getFoodType() * 500);
+    if (catFood.getFoodType() == 0 || catFood.getTexture() == 0) throw new IllegalStateException("inedible");
+  }
+
+  /**
+   * It is clumsy but most reliable code I could make so far
+   */
+  public class StringEvent extends RemoteApplicationEvent {
+    @Getter
+    private final String string;
+
+    public StringEvent(String string) {
+      super(new Object(), serviceMatcher.getServiceId(), null);
+      this.string = string;
+    }
+
+    public StringEvent(RemoteApplicationEvent event) {
+      super(new Object(), serviceMatcher.getServiceId(), null);
+      final UnknownRemoteApplicationEvent unknownRemoteApplicationEvent = (UnknownRemoteApplicationEvent) event;
+      final String typeInfo = unknownRemoteApplicationEvent.getTypeInfo();
+      Assert.isTrue(this.getClass().getName().endsWith(typeInfo), "not deserializable");
+      try {
+        HashMap payload = new ObjectMapper().readValue(unknownRemoteApplicationEvent.getPayload(), HashMap.class);
+        this.string = String.valueOf(payload.get("string"));
+      } catch (IOException e) {
+        throw new UncheckedIOException(e);
+      }
+    }
+
+  }
 
 }

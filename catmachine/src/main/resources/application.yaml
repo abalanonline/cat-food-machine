@@ -1,8 +1,8 @@
 # for curl -d "*" http://localhost:8080/bus/refresh
 management.security.enabled: false
 #spring.cloud.bus.destination: springCloudBus
-spring.cloud.bus.destination: ctmac-topic
-catmachine.queue: ctmac-queue
+spring.cloud.bus.destination: test-ctm-topic
+catmachine.queue: test-ctm-queue
 
 # pub/sub set explicitly, this key is ignored
 #spring.jms.pub-sub-domain: true
