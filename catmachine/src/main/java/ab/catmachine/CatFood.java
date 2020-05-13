@@ -28,7 +28,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CatFood implements Serializable {
   private final static String[] FOOD_TYPES = {
-      "something", "salmon", "tuna", "mutton", "chicken", "turkey", "duck", "goose",
+      "yarn", "salmon", "tuna", "mutton", "chicken", "turkey", "duck", "goose",
       "beef", "pork", "eggs", "ham", "liver", "giblets", "crab", "whitefish"};
 
   private final static String[] FOOD_TEXTURES = {
@@ -47,7 +47,8 @@ public class CatFood implements Serializable {
 
   @Override
   public String toString() {
-    return FOOD_TEXTURES[getTexture()] + " " + FOOD_TYPES[getFoodType()] + " " + uuid.toString().substring(34);
+    return FOOD_TEXTURES[getTexture()] + " " + FOOD_TYPES[getFoodType()] + " "
+        + uuid.toString().substring(34).toUpperCase();
   }
 
 }

@@ -75,7 +75,7 @@
     </dependency>
 
     <!-- this dependency defines implementation -->
-    <!-- dependency>
+    <dependency>
       <groupId>ab.catfood</groupId>
       <artifactId>food-flavor</artifactId>
       <version>0.1.0</version>
@@ -84,18 +84,12 @@
       <groupId>ab.catfood</groupId>
       <artifactId>food-aroma</artifactId>
       <version>0.1.0</version>
-    </dependency -->
+    </dependency>
 
     <!-- and healthy food service -->
-    <!-- dependency>
-      <groupId>ab.catfood</groupId>
-      <artifactId>food-chicken</artifactId>
-      <version>0.1.0</version>
-    </dependency -->
-
     <dependency>
       <groupId>ab.catfood</groupId>
-      <artifactId>food-processed</artifactId>
+      <artifactId>food-chicken</artifactId>
       <version>0.1.0</version>
     </dependency>
 

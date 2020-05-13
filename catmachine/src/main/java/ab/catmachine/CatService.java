@@ -31,11 +31,14 @@ import org.springframework.cloud.bus.event.UnknownRemoteApplicationEvent;
 import org.springframework.cloud.context.scope.refresh.RefreshScopeRefreshedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -70,7 +73,11 @@ public class CatService implements BiConsumer<Map<String, String>, CatFood> {
   private ApplicationEventPublisher applicationEventPublisher;
 
   public void somethingACatDoes(String something) {
-    applicationEventPublisher.publishEvent(new StringEvent(firstName + " " + something));
+    somethingASomeoneDoes(something, firstName);
+  }
+
+  public void somethingASomeoneDoes(String something, String someone) {
+    applicationEventPublisher.publishEvent(new StringEvent(someone + " " + something));
   }
 
   @EventListener
@@ -95,11 +102,13 @@ public class CatService implements BiConsumer<Map<String, String>, CatFood> {
       final CatFood catFood = new CatFood(UUID.randomUUID());
       Meow<CatFood> meow = new Meow<>(new HashMap<>(), catFood);
       pub.pub(QUEUE, meow);
-      somethingACatDoes("catmachine delivered " + catFood);
+      somethingASomeoneDoes("delivered " + catFood, "Catmachine");
     }
   }
 
   private final String firstName;
+
+  private Instant chatteringTime;
 
   @Autowired
   private MeowPub<CatFood> pub;
@@ -108,6 +117,7 @@ public class CatService implements BiConsumer<Map<String, String>, CatFood> {
   public CatService(MeowSub<CatFood> sub) {
     this.firstName = popularCatNames[ThreadLocalRandom.current().nextInt(popularCatNames.length)]
         + String.format("%02d", ThreadLocalRandom.current().nextInt(100));
+    this.chatteringTime = Instant.now().plus(Duration.ofSeconds(2 + ThreadLocalRandom.current().nextInt(4)));
     sub.sub(QUEUE, this);
   }
 
@@ -118,14 +128,31 @@ public class CatService implements BiConsumer<Map<String, String>, CatFood> {
   @Override
   public void accept(Map<String, String> stringStringMap, CatFood catFood) {
     somethingACatDoes("picked " + catFood);
-    consumeFood(catFood);
-    somethingACatDoes("consumed " + catFood + " and " + randomBehaviour());
+    try {
+      consumeFood(catFood);
+      somethingACatDoes("consumed " + catFood + " and " + randomBehaviour());
+    } catch (Exception e) {
+      somethingACatDoes("could not make it: " + e.getMessage());
+      throw e;
+    }
   }
 
   @SneakyThrows
   private void consumeFood(CatFood catFood) {
-    Thread.sleep(catFood.getFoodType() * 500);
+    //final boolean debug = true; if (debug) { Thread.sleep(500); return; }
+    // inedible yarn have zero consumption time creating bursts of exceptions
+    final int msToConsume = catFood.getFoodType() * 500;
+    this.chatteringTime = Instant.now().plus(Duration.ofMillis(5000 + msToConsume));
+    Thread.sleep(msToConsume);
     if (catFood.getFoodType() == 0 || catFood.getTexture() == 0) throw new IllegalStateException("inedible");
+  }
+
+  @Scheduled(fixedRate = 1000)
+  public void passTime() {
+    if (Instant.now().isAfter(chatteringTime)) {
+      somethingACatDoes(ThreadLocalRandom.current().nextBoolean() ? "meows loudly" : "chatter softly");
+      chatteringTime = Instant.now().plus(Duration.ofSeconds(10));
+    }
   }
 
   /**

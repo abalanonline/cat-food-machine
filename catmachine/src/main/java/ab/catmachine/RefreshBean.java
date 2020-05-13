@@ -27,10 +27,10 @@ import org.springframework.stereotype.Service;
 @RefreshScope
 public class RefreshBean {
   public RefreshBean() {
-    log.warn("new bean");
+    //log.warn("new bean"); // log bean creating on refresh
   }
   @EventListener
   public void onRefreshScopeRefreshed(final RefreshScopeRefreshedEvent event) {
-    log.trace(getClass().toString()); // eager bean refresh
+    log.trace(getClass().toString()); // eager bean refresh, it is lazy by default
   }
 }
