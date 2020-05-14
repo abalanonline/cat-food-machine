@@ -62,7 +62,7 @@ public class FlavorCatFoodProvider<M> implements MeowPub<M>, MeowSub<M>, Message
     DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
     factory.setPubSubDomain(false);
     factory.setConnectionFactory(jmsConnectionFactory);
-    //factory.setSessionTransacted(true);
+    factory.setSessionTransacted(true);
     //factory.setAutoStartup(true);
     jmsListenerContainerFactory = factory;
 

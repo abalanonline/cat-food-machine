@@ -35,6 +35,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import javax.jms.ConnectionFactory;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Duration;
@@ -68,6 +69,9 @@ public class CatService implements BiConsumer<Map<String, String>, CatFood> {
 
   @Autowired
   private ServiceMatcher serviceMatcher;
+
+  @Autowired
+  private ConnectionFactory connectionFactory;
 
   @Autowired
   private ApplicationEventPublisher applicationEventPublisher;
@@ -117,7 +121,7 @@ public class CatService implements BiConsumer<Map<String, String>, CatFood> {
   public CatService(MeowSub<CatFood> sub) {
     this.firstName = popularCatNames[ThreadLocalRandom.current().nextInt(popularCatNames.length)]
         + String.format("%02d", ThreadLocalRandom.current().nextInt(100));
-    this.chatteringTime = Instant.now().plus(Duration.ofSeconds(2 + ThreadLocalRandom.current().nextInt(4)));
+    this.chatteringTime = Instant.now().plus(Duration.ofSeconds(4 + ThreadLocalRandom.current().nextInt(4)));
     sub.sub(QUEUE, this);
   }
 
@@ -145,11 +149,13 @@ public class CatService implements BiConsumer<Map<String, String>, CatFood> {
     this.chatteringTime = Instant.now().plus(Duration.ofMillis(5000 + msToConsume));
     Thread.sleep(msToConsume);
     if (catFood.getFoodType() == 0 || catFood.getTexture() == 0) throw new IllegalStateException("inedible");
+    //if (catFood.getFoodType() < 10) throw new IllegalStateException("test");
   }
 
   @Scheduled(fixedRate = 1000)
   public void passTime() {
     if (Instant.now().isAfter(chatteringTime)) {
+      log.debug("chatter at " + connectionFactory);
       somethingACatDoes(ThreadLocalRandom.current().nextBoolean() ? "meows loudly" : "chatter softly");
       chatteringTime = Instant.now().plus(Duration.ofSeconds(10));
     }
