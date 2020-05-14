@@ -77,11 +77,22 @@ public class CatService implements BiConsumer<Map<String, String>, CatFood> {
   private ApplicationEventPublisher applicationEventPublisher;
 
   public void somethingACatDoes(String something) {
-    somethingASomeoneDoes(something, firstName);
+    String threadName = Thread.currentThread().getName();
+    if (threadName.startsWith("DefaultMessageListenerContainer-")) {
+      threadName = threadName.substring(32);
+      if ("1".equals(threadName)) {
+        threadName = "";
+      } else {
+        threadName = "-yarn" + threadName;
+      }
+    } else {
+      threadName = "";
+    }
+    somethingASomeoneDoes(something, firstName + threadName);
   }
 
   public void somethingASomeoneDoes(String something, String someone) {
-    applicationEventPublisher.publishEvent(new StringEvent(someone + " " + something));
+    new Thread(() -> applicationEventPublisher.publishEvent(new StringEvent(someone + " " + something))).start();
   }
 
   @EventListener
@@ -101,12 +112,15 @@ public class CatService implements BiConsumer<Map<String, String>, CatFood> {
     if (string.contains("meow")) runCatMachine();
   }
 
+  @SneakyThrows
   public void runCatMachine() {
+    Thread.sleep(500 + ThreadLocalRandom.current().nextInt(500));
     for (int i = 0; i < 4; i++) {
       final CatFood catFood = new CatFood(UUID.randomUUID());
       Meow<CatFood> meow = new Meow<>(new HashMap<>(), catFood);
-      pub.pub(QUEUE, meow);
       somethingASomeoneDoes("delivered " + catFood, "Catmachine");
+      pub.pub(QUEUE, meow);
+      Thread.sleep(ThreadLocalRandom.current().nextInt(500));
     }
   }
 
@@ -145,8 +159,12 @@ public class CatService implements BiConsumer<Map<String, String>, CatFood> {
   private void consumeFood(CatFood catFood) {
     //final boolean debug = true; if (debug) { Thread.sleep(500); return; }
     // inedible yarn have zero consumption time creating bursts of exceptions
-    final int msToConsume = catFood.getFoodType() * 500;
-    this.chatteringTime = Instant.now().plus(Duration.ofMillis(5000 + msToConsume));
+    int msToConsume = catFood.getFoodType() * 500;
+    //msToConsume += 5000;
+    final Instant newChatteringTime = Instant.now().plus(Duration.ofMillis(5000 + msToConsume));
+    if (newChatteringTime.isAfter(chatteringTime)) {
+      this.chatteringTime = newChatteringTime;
+    }
     Thread.sleep(msToConsume);
     if (catFood.getFoodType() == 0 || catFood.getTexture() == 0) throw new IllegalStateException("inedible");
     //if (catFood.getFoodType() < 10) throw new IllegalStateException("test");

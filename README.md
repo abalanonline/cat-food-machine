@@ -26,3 +26,18 @@ Listener threw exception
 Caused by: java.lang.IllegalStateException: inedible
 
 ```
+
+## Multiyarning
+
+```text
+Shadow35 meows loudly
+Catmachine delivered pate beef 38
+Shadow35 picked pate beef 38
+Catmachine delivered solid liver 1C
+Catmachine delivered shredded pork 59
+Shadow35-yarn2 picked shredded pork 59
+Catmachine delivered solid salmon 11
+Shadow35 consumed pate beef 38 and bounced
+Shadow35 picked solid liver 1C
+Shadow35-yarn2 consumed shredded pork 59 and leaped
+```

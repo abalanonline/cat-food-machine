@@ -16,3 +16,4 @@ spring.activemq:
 
 # for amqp broker
 #spring.jms.jndi-name: java:/org.apache.qpid.jms.JmsConnectionFactory
+logging.level.org.apache.activemq.transport.failover.FailoverTransport: WARN
