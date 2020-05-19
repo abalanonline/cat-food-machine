@@ -63,6 +63,7 @@ public class FlavorCatFoodProvider<M> implements MeowPub<M>, MeowSub<M>, Message
     factory.setPubSubDomain(false);
     factory.setConnectionFactory(jmsConnectionFactory);
     factory.setSessionTransacted(true);
+    factory.setConcurrency("1-1"); // multiyarning
     //factory.setAutoStartup(true);
     jmsListenerContainerFactory = factory;
 
@@ -99,7 +100,6 @@ public class FlavorCatFoodProvider<M> implements MeowPub<M>, MeowSub<M>, Message
     endpoint.setMessageListener(this);
     endpoint.setDestination(queue.getQueueName());
     endpoint.setId(this.getClass().getName() + "#" + UUID.randomUUID().toString());
-    endpoint.setConcurrency("1"); // multiyarning
     //MessageListenerContainer listenerContainer = jmsListenerContainerFactory.createListenerContainer(endpoint);
     jmsListenerEndpointRegistry.registerListenerContainer(endpoint, jmsListenerContainerFactory, true);
   }
